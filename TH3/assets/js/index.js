@@ -164,10 +164,18 @@ const itemList = {
     }
 };
 
-
+function getDiscountRate() {
+    var d = new Date();//lấy ngày hiện tại của máy tính
+    var weekday = d.getDay();//lấy ngày trong tuần
+    var totalMins = d.getHours() * 60 + d.getMinutes();
+    if (weekday >= 1 && weekday <= 3 && ((totalMins >= 420 && totalMins <= 660) || (totalMins >= 780 && totalMins <= 1020)))
+        return 0.1;
+    return 0;
+}
 
 function showCart() {
     let TotalPreTax = 0
+    let tbody = document.querySelector('tbody')
     for (const key in localStorage) {
         if (Object.hasOwnProperty.call(localStorage, key)) {
             const item = itemList[key];
@@ -175,9 +183,75 @@ function showCart() {
             let name = item.name
             let price = item.price
             let orderNumber = localStorage.getItem(key)
-            console.log(item)
+
+            let tr = document.createElement('tr')
+            tr.innerHTML = `<td class="text-center"><img src="${photo}" alt="${name}"></td>
+            <td>${name}</td>
+            <td class="text-right">${orderNumber}</td>
+            <td class="text-right">${new Intl.NumberFormat().format(price)}đ</td>
+            <td class="text-right">${new Intl.NumberFormat().format(price * orderNumber)}đ</td>
+            <td class="text-center"><a href="#" data-code=${key}  onclick ="removeCart(this.dataset.code)"><span class="btn-danger"><i class="fa-solid fa-trash"></i></span></a></td>`
+            // let td1 = document.createElement('td')
+            // let img = document.createElement('img')
+            // img.src = photo
+            // img.width = '100px'
+            // td1.className = 'text-center'
+            // td1.appendChild(img)
+            // tr.appendChild(td1)
+
+            TotalPreTax += (price * orderNumber)
+            tbody.appendChild(tr)
+
         }
     }
+    let discountRate = getDiscountRate()
+    let discount = TotalPreTax * discountRate
+    let tax = 0.1 * (TotalPreTax - discount)
+    let totalPrice = TotalPreTax - discount + tax
+
+    let tr1 = document.createElement('tr')
+    tr1.innerHTML = `<td class="text-right" colspan="6">Tổng thành tiền (A) = ${new Intl.NumberFormat().format(TotalPreTax)}đ</td>`
+    let tr2 = document.createElement('tr')
+    tr2.innerHTML = `<td class="text-right" colspan="6">Chiết khấu (B) = ${discountRate} x ${new Intl.NumberFormat().format(TotalPreTax)} = ${new Intl.NumberFormat().format(discount)}đ</td>`
+    let tr3 = document.createElement('tr')
+    tr3.innerHTML = `<td class="text-right" colspan="6">Thiếu (C) = 10% x (${new Intl.NumberFormat().format(TotalPreTax)} - ${new Intl.NumberFormat().format(discount)}) = ${new Intl.NumberFormat().format(tax)}đ</td>`
+    let tr4 = document.createElement('tr')
+    tr4.innerHTML = `<td class="text-right" colspan="6">Tổng đơn hàng = ${new Intl.NumberFormat().format(TotalPreTax)} - ${new Intl.NumberFormat().format(discount)} + ${new Intl.NumberFormat().format(tax)} = ${new Intl.NumberFormat().format(totalPrice)}đ</td>`
+    let tr5 = document.createElement('tr')
+    tr5.innerHTML = `<td class="text-center" colspan="6"><button>Xác nhận đơn hàng</button></td>`
+    // tbody.innerHTML = `<tr>
+    //             <td class="text-right" colspan="6">Tổng thành tiền (A) = ${TotalPreTax}đ</td>
+    //         </tr>
+    //         <tr>
+    //             <td class="text-right" colspan="6">Chiết khấu (B) = 0.1 x ${TotalPreTax} = ${discount}đ</td>
+    //         </tr>
+    //         <tr>
+    //             <td class="text-right" colspan="6">Thiếu (C) = 10% x (${TotalPreTax} - ${discount}) = ${tax}đ</td>
+    //         </tr>
+    //         <tr>
+    //             <td class="text-right" colspan="6">Tổng đơn hàng = ${TotalPreTax} - ${discount} + ${tax} = ${totalPrice}đ</td>
+    //         </tr>
+    //         <tr>
+    //             <td class="text-center" colspan="6"><button>Xác nhận đơn hàng</button></td>
+    //         </tr>`
+    // tbody.append(div)
+    tbody.append(tr1, tr2, tr3, tr4, tr5)
+
+
 }
 showCart()
+
+function removeCart(key) {
+    if (typeof localStorage[key] !== "undefined") {
+        localStorage.removeItem(key)
+        // location.reload()
+        document.getElementsByTagName('tbody')[0].innerHTML = ''
+        showCart()
+    }
+}
+
+window.onstorage(() => {
+    showCart()
+})
+
 
