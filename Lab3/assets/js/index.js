@@ -188,8 +188,8 @@ function showCart() {
             tr.innerHTML = `<td class="text-center"><img src="${photo}" alt="${name}"></td>
             <td>${name}</td>
             <td class="text-right">${orderNumber}</td>
-            <td class="text-right">${new Intl.NumberFormat().format(price)}đ</td>
-            <td class="text-right">${new Intl.NumberFormat().format(price * orderNumber)}đ</td>
+            <td class="text-right">${formatCurrency(price)}đ</td>
+            <td class="text-right">${formatCurrency(price * orderNumber)}đ</td>
             <td class="text-center"><a href="#" data-code=${key}  onclick ="removeCart(this.dataset.code)"><span class="btn-danger"><i class="fa-solid fa-trash"></i></span></a></td>`
             // let td1 = document.createElement('td')
             // let img = document.createElement('img')
@@ -209,14 +209,18 @@ function showCart() {
     let tax = 0.1 * (TotalPreTax - discount)
     let totalPrice = TotalPreTax - discount + tax
 
+    function formatCurrency(num) {
+        return Intl.NumberFormat().format(num)
+    }
+
     let tr1 = document.createElement('tr')
-    tr1.innerHTML = `<td class="text-right" colspan="6">Tổng thành tiền (A) = ${new Intl.NumberFormat().format(TotalPreTax)}đ</td>`
+    tr1.innerHTML = `<td class="text-right" colspan="6">Tổng thành tiền (A) = ${formatCurrency(TotalPreTax)}đ</td>`
     let tr2 = document.createElement('tr')
-    tr2.innerHTML = `<td class="text-right" colspan="6">Chiết khấu (B) = ${discountRate} x ${new Intl.NumberFormat().format(TotalPreTax)} = ${new Intl.NumberFormat().format(discount)}đ</td>`
+    tr2.innerHTML = `<td class="text-right" colspan="6">Chiết khấu (B) = ${discountRate} x ${formatCurrency(TotalPreTax)} = ${formatCurrency(discount)}đ</td>`
     let tr3 = document.createElement('tr')
-    tr3.innerHTML = `<td class="text-right" colspan="6">Thiếu (C) = 10% x (${new Intl.NumberFormat().format(TotalPreTax)} - ${new Intl.NumberFormat().format(discount)}) = ${new Intl.NumberFormat().format(tax)}đ</td>`
+    tr3.innerHTML = `<td class="text-right" colspan="6">Thiếu (C) = 10% x (${formatCurrency(TotalPreTax)} - ${formatCurrency(discount)}) = ${formatCurrency(tax)}đ</td>`
     let tr4 = document.createElement('tr')
-    tr4.innerHTML = `<td class="text-right" colspan="6">Tổng đơn hàng = ${new Intl.NumberFormat().format(TotalPreTax)} - ${new Intl.NumberFormat().format(discount)} + ${new Intl.NumberFormat().format(tax)} = ${new Intl.NumberFormat().format(totalPrice)}đ</td>`
+    tr4.innerHTML = `<td class="text-right" colspan="6">Tổng đơn hàng = ${formatCurrency(TotalPreTax)} - ${formatCurrency(discount)} + ${formatCurrency(tax)} = ${formatCurrency(totalPrice)}đ</td>`
     let tr5 = document.createElement('tr')
     tr5.innerHTML = `<td class="text-center" colspan="6"><button>Xác nhận đơn hàng</button></td>`
     // tbody.innerHTML = `<tr>
